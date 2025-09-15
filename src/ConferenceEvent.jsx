@@ -10,6 +10,7 @@ const ConferenceEvent = () => {
     const [numberOfPeople, setNumberOfPeople] = useState(1);
     const venueItems = useSelector((state) => state.venue);
     const avItems = useSelector((state) => state.av);
+    const mealsItems = useSelector((state) => state.meals);
     const dispatch = useDispatch();
     const remainingAuditoriumQuantity = 3 - venueItems.find(item => item.name === "Auditorium Hall (Capacity:200)").quantity;
 
@@ -157,11 +158,8 @@ const ConferenceEvent = () => {
                 {/*Necessary Add-ons*/}
                 <div id="addons" className="venue_container container_main">
 
-
                     <div className="text">
-
                     <h1> Add-on Selections</h1>
-
                     </div>
 
                     <div className="addons_selection">
@@ -180,22 +178,25 @@ const ConferenceEvent = () => {
                         </div>
                     ))}
                     </div>
+
                     <div className="total_cost">Total Cost: ${avTotalCost}</div>
+                </div> {/*Enf of Add-ons*/}
 
-                </div>
+                {/* Meal Section */}
 
-                    {/* Meal Section */}
+                <div id="meals" className="venue_container container_main">
 
-                    <div id="meals" className="venue_container container_main">
-
-                        <div className="text">
-
-                            <h1>Meals Selection</h1>
-                        </div>
-
-                    <div className="input-container venue_selection">
-
+                    <div className="text">
+                    <h1>Meals Selection</h1>
                     </div>
+
+                <div className="input-container venue_selection">
+                    <label htmlFor="numberOfPeople"><h3>Number of People:</h3></label>
+                    <input type="number" className="input_box5" id="numberOfPeople" value={numberOfPeople}
+                        onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
+                         min="1"
+                    />
+                </div>
                                 <div className="meal_selection">
 
                                 </div>
