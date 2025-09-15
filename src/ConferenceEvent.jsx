@@ -23,7 +23,7 @@ const ConferenceEvent = () => {
         dispatch(incrementQuantity(index));
       };
     
-      const handleRemoveFromCart = (index) => {
+    const handleRemoveFromCart = (index) => {
         if (venueItems[index].quantity > 0) {
           dispatch(decrementQuantity(index));
         }
@@ -147,34 +147,34 @@ const ConferenceEvent = () => {
         <div className="total_cost">Total Cost: ${venueTotalCost}</div>
       </div>
 
-                            {/*Necessary Add-ons*/}
-                            <div id="addons" className="venue_container container_main">
+                {/*Necessary Add-ons*/}
+                <div id="addons" className="venue_container container_main">
 
 
-                                <div className="text">
+                    <div className="text">
 
-                                    <h1> Add-ons Selection</h1>
+                    <h1> Add-on Selections</h1>
 
-                                </div>
-                                <div className="addons_selection">
+                    </div>
+                    <div className="addons_selection">
 
-                                </div>
-                                <div className="total_cost">Total Cost:</div>
+                    </div>
+                    <div className="total_cost">Total Cost:</div>
 
-                            </div>
+                    </div>
 
-                            {/* Meal Section */}
+                    {/* Meal Section */}
 
-                            <div id="meals" className="venue_container container_main">
+                    <div id="meals" className="venue_container container_main">
 
-                                <div className="text">
+                        <div className="text">
 
-                                    <h1>Meals Selection</h1>
-                                </div>
+                            <h1>Meals Selection</h1>
+                        </div>
 
-                                <div className="input-container venue_selection">
+                    <div className="input-container venue_selection">
 
-                                </div>
+                    </div>
                                 <div className="meal_selection">
 
                                 </div>
