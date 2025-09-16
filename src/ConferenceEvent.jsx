@@ -4,6 +4,7 @@ import TotalCost from "./TotalCost";
 import { useSelector, useDispatch } from "react-redux";
 import { incrementQuantity, decrementQuantity } from "./venueSlice";
 import { incrementAvQuantity, decrementAvQuantity } from "./avSlice";
+import { toggleMealSelection } from "./mealsSlice";
 
 const ConferenceEvent = () => {
     const [showItems, setShowItems] = useState(false);
@@ -41,7 +42,15 @@ const ConferenceEvent = () => {
     };
 
     const handleMealSelection = (index) => {
-       
+        const item = mealsItems[index];
+        if (item.selected && item.type === "mealForPeople") {
+            // Ensure numberOfPeople is set before toggling selection
+            const newNumberOfPeople = item.selected ? numberOfPeople : 0;
+            dispatch(toggleMealSelection(index, newNumberOfPeople));
+        }
+        else {
+            dispatch(toggleMealSelection(index));
+        }
     };
 
     const getItemsFromTotalCost = () => {
@@ -63,11 +72,18 @@ const ConferenceEvent = () => {
             avItems.forEach((item) => {
               totalCost += item.cost * item.quantity;
             });
-          }
+        } else if (section === "meals") {
+            mealsItems.forEach((item) => {
+                if (item.selected) {
+                  totalCost += item.cost * numberOfPeople;
+                }
+              });
+        }
         return totalCost;
       };
     const venueTotalCost = calculateTotalCost("venue");
     const avTotalCost = calculateTotalCost("av");
+    const mealsTotalCost = calculateTotalCost("meals");
 
     const navigateToProducts = (idType) => {
         if (idType == '#venue' || idType == '#addons' || idType == '#meals') {
@@ -110,45 +126,43 @@ const ConferenceEvent = () => {
                     <div className="button_container">
                         {venueItems[index].name === "Auditorium Hall (Capacity:200)" ? (
 
-                <>
-                <button
-                    className={venueItems[index].quantity === 0 ? "btn-warning btn-disabled" : "btn-minus btn-warning"}
+                        <>
+                        <button
+                            className={venueItems[index].quantity === 0 ? "btn-warning btn-disabled" : "btn-minus btn-warning"}
+                            onClick={() => handleRemoveFromCart(index)}
+                        >
+                            &#8211;
+                        </button>
+                        <span className="selected_count">
+                            {venueItems[index].quantity > 0 ? ` ${venueItems[index].quantity}` : "0"}
+                        </span>
+                        <button
+                            className={remainingAuditoriumQuantity === 0? "btn-success btn-disabled" : "btn-success btn-plus"}
+                            onClick={() => handleAddToCart(index)}
+                        >
+                            &#43;
+                        </button>
+                        </>
+                    ) : (
+                    <div className="button_container">
+                    <button
+                    className={venueItems[index].quantity ===0 ? " btn-warning btn-disabled" : "btn-warning btn-plus"}
                     onClick={() => handleRemoveFromCart(index)}
-                >
+                    >
                     &#8211;
-                </button>
-                <span className="selected_count">
+                    </button>
+                    <span className="selected_count">
                     {venueItems[index].quantity > 0 ? ` ${venueItems[index].quantity}` : "0"}
-                </span>
-                <button
-                    className={remainingAuditoriumQuantity === 0? "btn-success btn-disabled" : "btn-success btn-plus"}
+                    </span>
+                    <button
+                    className={venueItems[index].quantity === 10 ? " btn-success btn-disabled" : "btn-success btn-plus"}
                     onClick={() => handleAddToCart(index)}
-                >
+                    >
                     &#43;
-                </button>
-                </>
-            ) : (
-          <div className="button_container">
-           <button
-              className={venueItems[index].quantity ===0 ? " btn-warning btn-disabled" : "btn-warning btn-plus"}
-              onClick={() => handleRemoveFromCart(index)}
-            >
-               &#8211;
-            </button>
-            <span className="selected_count">
-              {venueItems[index].quantity > 0 ? ` ${venueItems[index].quantity}` : "0"}
-            </span>
-            <button
-              className={venueItems[index].quantity === 10 ? " btn-success btn-disabled" : "btn-success btn-plus"}
-              onClick={() => handleAddToCart(index)}
-            >
-             &#43;
-            </button>
-            
-            
-          </div>
-        )}
-      </div>
+                    </button>           
+                    </div> // button container
+            )}
+        </div>  {/* main container */}
             </div>
           ))}
         </div>
@@ -183,39 +197,48 @@ const ConferenceEvent = () => {
                 </div> {/*Enf of Add-ons*/}
 
                 {/* Meal Section */}
-
                 <div id="meals" className="venue_container container_main">
 
                     <div className="text">
                     <h1>Meals Selection</h1>
                     </div>
 
-                <div className="input-container venue_selection">
-                    <label htmlFor="numberOfPeople"><h3>Number of People:</h3></label>
-                    <input type="number" className="input_box5" id="numberOfPeople" value={numberOfPeople}
-                        onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
-                         min="1"
-                    />
-                </div>
-                                <div className="meal_selection">
+                    <div className="input-container venue_selection">
+                        <label htmlFor="numberOfPeople"><h3>Number of People:</h3></label>
+                        <input type="number" className="input_box5" id="numberOfPeople" value={numberOfPeople}
+                            onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
+                            min="1"
+                        />
+                    </div>
 
-                                </div>
-                                <div className="total_cost">Total Cost: </div>
-
-
+                    <div className="meal_selection">
+                    {mealsItems.map((item, index) => (
+                        <div className="meal_item" key={index} style={{ padding: 15 }}>
+                            <div className="inner">
+                                <input type="checkbox" id={ `meal_${index}` }
+                                    checked={ item.selected }
+                                    onChange={() => handleMealSelection(index)}
+                                />
+                                <label htmlFor={`meal_${index}`}> {item.name} </label>
                             </div>
+                            <div className="meal_cost">${item.cost}</div>
                         </div>
-                    ) : (
-                        <div className="total_amount_detail">
-                            <TotalCost totalCosts={totalCosts} handleClick={handleToggleItems} ItemsDisplay={() => <ItemsDisplay items={items} />} />
-                        </div>
-                    )
-                }
-
-
-
-
+                        ))}
+                    </div>
+                    <div className="total_cost">Total Cost: ${mealsTotalCost}</div>
+                </div> {/* meals */}
             </div>
+            ) : (
+                <div className="total_amount_detail">
+                    <TotalCost totalCosts={totalCosts} handleClick={handleToggleItems} ItemsDisplay={() => <ItemsDisplay items={items} />} />
+                </div>
+            )
+            }
+
+
+
+
+        </div>
         </>
 
     );
